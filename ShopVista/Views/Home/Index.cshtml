@@ -1,0 +1,360 @@
+﻿@model ShopVista.Models.HomeViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopVista | Premium Shopping Experience</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="~/css/Ecom.css" />
+    <style>
+        
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    @* <header id="header">
+        <div class="container header-container">
+            <a href="#" class="logo">ShopVista</a>
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="nav-menu" id="navMenu">
+                <ul class="nav-links">
+                    <li><a href="#home" class="nav-link">Home</a></li>
+                    <li><a href="#categories" class="nav-link">Categories</a></li>
+                    <li><a href="#products" class="nav-link">Featured</a></li>
+                    <li><a href="#new-arrivals" class="nav-link">New Arrivals</a></li>
+                    <li><a href="#sale" class="nav-link">Sale</a></li>
+                </ul>
+                <div class="bottom-nav">
+                    <div class="nav-actions">
+                        <div class="action-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="action-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="action-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="action-icon">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span class="cart-count">3</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="overlay" id="overlay"></div>
+    </header> *@
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-bg"></div>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Discover the <span>Latest Trends</span> in Fashion</h1>
+                <p class="hero-description">Explore our curated collection of premium clothing, accessories, and lifestyle products. Shop the latest styles that define modern elegance.</p>
+                <div class="hero-buttons">
+                    <a href="#products" class="btn">Shop Now</a>
+                    <a href="#categories" class="btn btn-outline">Browse Categories</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Featured Categories -->
+    <section class="categories" id="categories">
+        <div class="container">
+            <h2 class="section-title">Shop by Category</h2>
+            <div class="categories-container">
+                @if (Model?.Categories != null && Model.Categories.Any())
+                {
+                    @foreach (var category in Model.Categories)
+                    {
+                        <div class="category-card">
+                            <a asp-controller="Product" asp-action="CategoryProducts" asp-route-categoryId="@category.Id">
+                                <img src="@category.ImageUrl" alt="@category.Name" class="category-image">
+                                <div class="category-content">
+                                    <h3 class="category-title">@category.Name</h3>
+                                    <p class="category-count">@category.ProductCount Products</p>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>No categories available.</p>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="products" id="products">
+        <div class="container">
+            <h2 class="section-title">Featured Products</h2>
+            <div class="products-grid">
+                @if (Model?.FeaturedProducts != null && Model.FeaturedProducts.Any())
+                {
+                    @foreach (var product in Model.FeaturedProducts)
+                    {
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="@product.ImageUrl" alt="@product.Name" class="product-image">
+                                @if (product.IsNew)
+                                {
+                                    <div class="product-badge">New</div>
+                                }
+                                @if (product.IsHot)
+                                {
+                                    <div class="product-badge">Hot</div>
+                                }
+                            </div>
+                            <div class="product-content">
+                                <div class="product-category">@product.Category?.Name</div>
+                                <h3 class="product-title">@product.Name</h3>
+                                <div class="product-rating">
+                                    @for (int i = 0; i < (int)product.Rating; i++)
+                                    {
+                                        <i class="fas fa-star"></i>
+                                    }
+                                    @if (product.Rating % 1 != 0)
+                                    {
+                                        <i class="fas fa-star-half-alt"></i>
+                                    }
+                                    <span>(@product.Rating)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="current-price">@product.Price.ToString("C")</span>
+                                    @if (product.OldPrice.HasValue && product.OldPrice.Value > 0)
+                                    {
+                                        <span class="old-price">@product.OldPrice.Value.ToString("C")</span>
+                                        <span class="discount">
+                                            -@(((product.OldPrice.Value - product.Price) / product.OldPrice.Value * 100).ToString("0"))%
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>No featured products available.</p>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Sale Banner -->
+    <section class="sale-banner" id="sale">
+        <div class="container">
+            <div class="sale-content">
+                <h2 class="sale-title">Spring Sale is Live</h2>
+                <p class="sale-description">Save up to 70% on all products. Limited time offer. Don't miss amazing deals on our exclusive collections.</p>
+                <div class="countdown">
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="days">03</div>
+                        <div class="countdown-label">Days</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="hours">21</div>
+                        <div class="countdown-label">Hours</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="minutes">45</div>
+                        <div class="countdown-label">Minutes</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="seconds">18</div>
+                        <div class="countdown-label">Seconds</div>
+                    </div>
+                </div>
+                <a href="#" class="btn pulse">Shop Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- New Arrivals -->
+    <section class="arrivals" id="new-arrivals">
+        <div class="container">
+            <h2 class="section-title">New Arrivals</h2>
+            <div class="products-grid">
+                @if (Model?.NewArrivals != null && Model.NewArrivals.Any())
+                {
+                    @foreach (var product in Model.NewArrivals)
+                    {
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="@product.ImageUrl" alt="@product.Name" class="product-image">
+                                <div class="product-badge">New</div>
+                                <div class="product-actions">
+                                    <div class="product-action">
+                                        <i class="fas fa-heart"></i>
+                                    </div>
+                                    <div class="product-action">
+                                        <i class="fas fa-eye"></i>
+                                    </div>
+                                    <div class="product-action">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="product-content">
+                                <div class="product-category">@product.Category?.Name</div>
+                                <h3 class="product-title">@product.Name</h3>
+                                <div class="product-rating">
+                                    @for (int i = 0; i < (int)product.Rating; i++)
+                                    {
+                                        <i class="fas fa-star"></i>
+                                    }
+                                    @if (product.Rating % 1 != 0)
+                                    {
+                                        <i class="fas fa-star-half-alt"></i>
+                                    }
+                                    <span>(@product.Rating)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="current-price">@product.Price.ToString("C")</span>
+                                </div>
+                                <div class="product-footer">
+                                    <div class="add-to-cart">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        <span>Add to Cart</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>No new arrivals available.</p>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter">
+        <div class="container">
+            <h2 class="section-title">Subscribe to Our Newsletter</h2>
+            <p>Get exclusive offers, new arrival alerts, and 10% off your first order.</p>
+            <form id="newsletterForm" class="newsletter-form">
+                <input type="email" id="newsletterEmail" class="newsletter-input" placeholder="Enter your email address" required>
+                <button type="submit" class="btn newsletter-btn">Subscribe</button>
+            </form>
+        </div>
+    </section>
+   
+
+    <!-- Brands -->
+    <section class="brands">
+        <div class="container">
+            <h2 class="section-title">Our Brands</h2>
+            <div class="brands-container">
+                <div class="brand-item">
+                    <img src="https://images.seeklogo.com/logo-png/31/2/raymond-logo-png_seeklogo-310941.png" alt="Brand 1">
+                </div>
+                <div class="brand-item">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAicOOrbIT_MmhVD1VtHT9BXVdXgLbkhH9nA&s" alt="Brand 2">
+                </div>
+                <div class="brand-item">
+                    <img src="https://thumbs.dreamstime.com/b/web-192037111.jpg" alt="Brand 3">
+                </div>
+                <div class="brand-item">
+                    <img src="https://staticg.sportskeeda.com/editor/2023/03/bda84-16779522739911-1920.jpg?w=640" alt="Brand 4">
+                </div>
+                <div class="brand-item">
+                    <img src="https://m.media-amazon.com/images/I/51Iy5h5rqgL.jpg" alt="Brand 5">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-about">
+                    <div class="footer-logo">
+                        <span>ShopVista</span>
+                    </div>
+                    <p>We offer the best products at the best prices. Our mission is to provide quality products that enhance your lifestyle.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-links-container">
+                    <h3 class="footer-title">Useful Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" class="footer-link"><i class="fas fa-angle-right"></i> About Us</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-angle-right"></i> FAQ</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-angle-right"></i> Location</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-angle-right"></i> Affiliates</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-angle-right"></i> Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links-container">
+                    <h3 class="footer-title">Categories</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" class="footer-link"><i class="fas fa-angle-right"></i> Fashion</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-angle-right"></i> Electronics</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-angle-right"></i> Home Decor</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-angle-right"></i> Beauty</a></li>
+                        <li><a href="#" class="footer-link"><i class="fas fa-angle-right"></i> Accessories</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3 class="footer-title">Contact Us</h3>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>123 Street, New York, USA</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <span>+1 234 56 789</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>info@shopvista.com</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Mon-Sat: 9AM - 8PM</span>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 <a href="#">ShopVista</a>. All Rights Reserved. Designed by ShopVista Team.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+   
+    <script src="~/js/ecom.js"></script>
+    <!-- JavaScript -->
+    <script>
+               // Animate categories
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Testimonial>
+
+@{
+    ViewData["Title"] = "Testimonials";
+}
+
+<h1>Testimonials</h1>
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Customer Name</th>
+            <th>Customer Title</th>
+            <th>Testimonial Text</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.CustomerName</td>
+                <td>@item.CustomerTitle</td>
+                <td>@(item.TestimonialText?.Length > 50 ? item.TestimonialText.Substring(0, 50) + "..." : item.TestimonialText)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

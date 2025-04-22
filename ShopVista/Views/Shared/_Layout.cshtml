@@ -1,0 +1,368 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ShopVista</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Ecom.css" />
+    <style>
+        /* Enhanced header styles */
+        #header {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: #fff;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #4a4a4a;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+            .logo:hover {
+                color: #ff6b6b;
+            }
+
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin: 0 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+        }
+
+        .bottom-nav {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .action-icon {
+            margin: 0 15px;
+            position: relative;
+            cursor: pointer;
+        }
+
+            .action-icon i {
+                font-size: 20px;
+                color: #4a4a4a;
+                transition: color 0.3s;
+            }
+
+            .action-icon:hover i {
+                color: #ff6b6b;
+            }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        /* User dropdown menu */
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 220px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            z-index: 1;
+            padding: 10px 0;
+            margin-top: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+
+            .user-dropdown-content:before {
+                content: '';
+                position: absolute;
+                top: -8px;
+                right: 28px;
+                border-left: 8px solid transparent;
+                border-right: 8px solid transparent;
+                border-bottom: 8px solid white;
+            }
+
+            .user-dropdown-content.show {
+                display: block;
+            }
+
+        .user-dropdown-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: #4a4a4a;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+            .user-dropdown-item:hover {
+                background-color: #f8f9fa;
+                color: #ff6b6b;
+            }
+
+            .user-dropdown-item i {
+                margin-right: 15px;
+                font-size: 16px;
+                width: 18px;
+                text-align: center;
+            }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #e9ecef;
+            margin: 8px 0;
+        }
+
+        .user-greeting {
+            display: flex;
+            align-items: end;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 25px;
+            background-color: #f8f9fa;
+            transition: all 0.3s;
+        }
+
+            .user-greeting:hover {
+                background-color: #f0f0f0;
+            }
+
+            .user-greeting i {
+                margin-right: 8px;
+                font-size: 16px;
+            }
+
+        .username {
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .dropdown-caret {
+            transition: transform 0.3s;
+        }
+
+        .user-greeting.active .dropdown-caret {
+            transform: rotate(180deg);
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile responsive */
+        @@media (max-width: 768px) {
+            .user-dropdown-content {
+                position: fixed;
+                top: unset;
+                right: 10px;
+                left: 10px;
+                width: calc(100% - 20px);
+            }
+
+                .user-dropdown-content:before {
+                    right: 50%;
+                }
+        }
+
+        .profile-photo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 8px;
+            border: 2px solid #f0f0f0;
+        }
+
+    </style>
+</head>
+<body>
+    <header id="header">
+        <div class="container header-container">
+            <a href="/" class="logo">ShopVista</a>
+            <ul class="navbar-nav">
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <li class="nav-item user-dropdown">
+                        <div class="user-greeting" id="userDropdownToggle">
+                            @if (!string.IsNullOrEmpty(UserManager.GetUserAsync(User).Result.ProfilePictureUrl) && UserManager.GetUserAsync(User).Result.ProfilePictureUrl != "Not Provided")
+                            {
+                                <img src="@UserManager.GetUserAsync(User).Result.ProfilePictureUrl" class="profile-photo" alt="Profile Photo" />
+                            }
+                            else
+                            {
+                                <i class="fas fa-user-circle"></i>
+                            }
+
+
+                        </div>
+                        <div class="user-dropdown-content" id="userDropdownMenu">
+                            <span style="text-align:center;padding-left:25px;" class="username">Heyy @UserManager.GetUserAsync(User).Result.FirstName</span>
+                            <a href="/Account/Profile" class="user-dropdown-item">
+
+                                <i class="fas fa-user"></i> My Profile
+                            </a>
+                            <a href="/Orders/History" class="user-dropdown-item">
+                                <i class="fas fa-box"></i> My Orders
+                            </a>
+                            <a href="/Account/Addresses" class="user-dropdown-item">
+                                <i class="fas fa-map-marker-alt"></i> Addresses
+                            </a>
+                            <a href="/Account/Wishlist" class="user-dropdown-item">
+                                <i class="fas fa-heart"></i> Wishlist
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="/Account/Settings" class="user-dropdown-item">
+                                <i class="fas fa-cog"></i> Settings
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <form class="form-inline" asp-controller="Account" asp-action="Logout" method="post">
+                                <button type="submit" class="user-dropdown-item border-0 bg-transparent w-100 text-start">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center" asp-controller="Account" asp-action="Register">
+                            <i class="fas fa-user-plus me-2"></i> Register
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center" asp-controller="Account" asp-action="Login">
+                            <i class="fas fa-sign-in-alt me-2"></i> Login
+                        </a>
+                    </li>
+                }
+            </ul>
+            <div class="nav-menu" id="navMenu">
+                <div class="bottom-nav">
+                    <div class="nav-actions">
+                        <div class="action-icon">
+                            <a asp-area="" asp-controller="Product" asp-action="Search"><i class="fas fa-search"></i></a>
+                        </div>
+                        <div class="action-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="action-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="action-icon">
+                            <a asp-controller="Cart" asp-action="Index"><i class="fas fa-shopping-bag"></i></a>
+                            <span class="cart-count">3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overlay" id="overlay"></div>
+    </header>
+
+    @RenderBody()
+    @await Html.PartialAsync("_ChatbotPartial")
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/ecom.js"></script>
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
+
+    <script>
+        // User dropdown toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const userDropdownToggle = document.getElementById('userDropdownToggle');
+            const userDropdownMenu = document.getElementById('userDropdownMenu');
+
+            if (userDropdownToggle) {
+                userDropdownToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdownToggle.classList.toggle('active');
+                    userDropdownMenu.classList.toggle('show');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userDropdownToggle.contains(e.target) && !userDropdownMenu.contains(e.target)) {
+                        userDropdownToggle.classList.remove('active');
+                        userDropdownMenu.classList.remove('show');
+                    }
+                });
+            }
+
+            // Add hover effects for action icons
+            const actionIcons = document.querySelectorAll('.action-icon');
+            actionIcons.forEach(icon => {
+                icon.addEventListener('mouseenter', function() {
+                    this.querySelector('i').classList.add('fa-bounce');
+                });
+                icon.addEventListener('mouseleave', function() {
+                    this.querySelector('i').classList.remove('fa-bounce');
+                });
+            });
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+

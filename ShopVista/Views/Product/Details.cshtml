@@ -1,0 +1,715 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - ShopSmart</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <style>
+        :root {
+            --primary: #3a86ff;
+            --secondary: #ff006e;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --success: #28a745;
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .product-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            padding: 40px 0;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @@media (min-width: 768px) {
+            .product-container
+
+        {
+            flex-direction: row;
+        }
+
+        }
+
+        .product-gallery {
+            flex: 1;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+
+        .product-image {
+            height: 400px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .product-image img {
+                max-width: 100%;
+                max-height: 300px;
+                object-fit: contain;
+                transition: transform 0.5s ease;
+            }
+
+            .product-image:hover img {
+                transform: scale(1.05);
+            }
+
+        .product-info {
+            flex: 1;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            background-color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transform: translateX(20px);
+            opacity: 0;
+        }
+
+        .product-title {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+            .product-title::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                height: 4px;
+                width: 60px;
+                background: linear-gradient(90deg, var(--primary), var(--secondary));
+                border-radius: 4px;
+            }
+
+        .product-category {
+            display: inline-block;
+            padding: 6px 12px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+            .product-category:hover {
+                transform: translateY(-3px);
+            }
+
+        .product-description {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+
+        .product-price-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .current-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .old-price {
+            font-size: 1.25rem;
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .discount-badge {
+            padding: 4px 8px;
+            background-color: var(--secondary);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        @@keyframes pulse {
+            0%
+
+        {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .stars {
+            display: flex;
+            gap: 2px;
+        }
+
+            .stars i {
+                color: gold;
+                font-size: 1.2rem;
+            }
+
+        .rating-count {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #2b77eb;
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(58, 134, 255, 0.3);
+            }
+
+        .btn-add-cart {
+            background-color: var(--success);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .btn-add-cart::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: all 0.5s;
+            }
+
+            .btn-add-cart:hover::before {
+                left: 100%;
+            }
+
+            .btn-add-cart:hover {
+                background-color: #218838;
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+            }
+
+        .product-meta {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+            .meta-item i {
+                color: var(--primary);
+            }
+
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+            .breadcrumbs a {
+                color: #666;
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+
+                .breadcrumbs a:hover {
+                    color: var(--primary);
+                }
+
+            .breadcrumbs .divider {
+                color: #ccc;
+            }
+
+        .item-added {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--success);
+            color: white;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(150%);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+        }
+
+            .item-added.show {
+                transform: translateX(0);
+            }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+            .quantity-selector label {
+                margin-right: 15px;
+                font-weight: 600;
+            }
+
+        .quantity-counter {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f1f1f1;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+            .quantity-btn:hover {
+                background-color: #e1e1e1;
+            }
+
+        .quantity-input {
+            width: 50px;
+            height: 40px;
+            border: none;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+            -moz-appearance: textfield;
+        }
+
+            .quantity-input::-webkit-outer-spin-button,
+            .quantity-input::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+        .back-to-list {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+            .back-to-list:hover {
+                transform: translateX(-5px);
+            }
+
+        .edit-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            text-decoration: none;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+            .edit-link:hover {
+                color: var(--primary);
+            }
+
+        /* Animation for cart icon */
+        @@keyframes bounce {
+            0%, 20%, 50%, 80%, 100%
+
+        {
+            transform: translateY(0);
+        }
+
+        40% {
+            transform: translateY(-10px);
+        }
+
+        60% {
+            transform: translateY(-5px);
+        }
+
+        }
+
+        .cart-icon-animation {
+            animation: bounce 2s ease infinite;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="#" class="back-to-list">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+            </svg>
+            Back to List
+        </a>
+
+        <div class="breadcrumbs">
+            <a href="#">Home</a>
+            <span class="divider">/</span>
+            <a href="#">Shop</a>
+            <span class="divider">/</span>
+            <a href="#">@Model.Category?.Name</a>
+            <span class="divider">/</span>
+            <span>@Model.Name</span>
+        </div>
+
+        <div class="product-container">
+            <div class="product-gallery">
+                <div class="product-image">
+                    <img src="@Model.ImageUrl" alt="@Model.Name" />
+                </div>
+            </div>
+
+            <div class="product-info">
+                <span class="product-category">@Model.Category?.Name</span>
+                <h1 class="product-title">@Model.Name</h1>
+
+                <div class="rating">
+                    <div class="stars">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="gold" viewBox="0 0 16 16">
+                            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="gold" viewBox="0 0 16 16">
+                            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="gold" viewBox="0 0 16 16">
+                            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="gold" viewBox="0 0 16 16">
+                            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="gold" viewBox="0 0 16 16">
+                            <path d="M5.354 5.119 7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256c-.386.198-.824-.149-.746-.592l.83-4.73-3.522-3.356c-.33-.314-.158-.888.283-.95l4.898-.696z" />
+                            <path d="M5.354 5.119 7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256c-.386.198-.824-.149-.746-.592l.83-4.73-3.522-3.356c-.33-.314-.158-.888.283-.95l4.898-.696z" />
+                        </svg>
+                    </div>
+                    <span class="rating-count">4.7 (128 reviews)</span>
+                </div>
+
+                <p class="product-description">@Model.Description</p>
+
+                <div class="product-price-container">
+                    <span class="current-price">@Model.Price.ToString("C")</span>
+                   @*  @if (Model.OldPrice.HasValue)
+                    {
+                        <span class="old-price">@Model.OldPrice.Value.ToString("C")</span>
+                        <span class="discount-badge">
+                            @(Math.Round((1 - (Model.Price / Model.OldPrice.Value)) * 100))% OFF
+                        </span>
+                    } *@
+                </div>
+                <form id="addToCartForm" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="productId" id="productIdInput" value="@Model.Id" />
+                    <div class="quantity-selector">
+                        <label for="quantity">Quantity:</label>
+                        <div class="quantity-counter">
+                            <button type="button" class="quantity-btn decrease-btn">-</button>
+                            <input type="number" id="quantity" name="quantity" class="quantity-input" value="1" min="1" max="99">
+                            <button type="button" class="quantity-btn increase-btn">+</button>
+                        </div>
+                    </div>
+
+                <div class="cta-buttons">
+                    <button class="btn btn-add-cart" id="addToCartBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="cart-icon" viewBox="0 0 16 16">
+                            <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                        </svg>
+                        Add to Cart
+                    </button>
+                    <button class="btn btn-primary">Buy Now</button>
+                </div>
+                </form>
+                <div class="product-meta">
+                    <div class="meta-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
+                        </svg>
+                        <span>In stock - Ready to ship</span>
+                    </div>
+                    <div class="meta-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5v-7zm1.294 7.456A1.999 1.999 0 0 1 4.732 11h5.536a2.01 2.01 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456zM12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12v4zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+                        </svg>
+                        <span>Free shipping on orders over $50</span>
+                    </div>
+
+
+                    <div class="meta-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z" />
+                            <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8zm0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z" />
+                        </svg>
+                        <span>30-day money-back guarantee</span>
+                    </div>
+                </div>
+
+                <a href="#" class="edit-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                    </svg>
+                    Edit Product
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="item-added" id="addedNotification">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+        </svg>
+        Item added to cart!
+    </div>
+
+    <script>
+
+                document.addEventListener("DOMContentLoaded", function () {
+            const decreaseBtns = document.querySelectorAll(".decrease-btn");
+            const increaseBtns = document.querySelectorAll(".increase-btn");
+            const quantityInputs = document.querySelectorAll(".quantity-input");
+
+            decreaseBtns.forEach((btn, index) => {
+                btn.addEventListener("click", function () {
+                    let input = quantityInputs[index];
+                    let newQuantity = parseInt(input.value) - 1;
+                    if (newQuantity >= 1) {
+                        input.value = newQuantity;
+                        updateCart(input.dataset.cartItemId, newQuantity);
+                    }
+                });
+            });
+
+            increaseBtns.forEach((btn, index) => {
+                btn.addEventListener("click", function () {
+                    let input = quantityInputs[index];
+                    let newQuantity = parseInt(input.value) + 1;
+                    input.value = newQuantity;
+                    updateCart(input.dataset.cartItemId, newQuantity);
+                });
+            });
+
+            function updateCart(cartItemId, quantity) {
+                fetch("/Cart/UpdateCartItem", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Requested-With": "XMLHttpRequest",
+                        "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({
+                        cartItemId: cartItemId,
+                        quantity: quantity
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log("Cart updated successfully");
+                        // You can update cart UI here if needed
+                    } else {
+                        console.error("Error updating cart:", data.message);
+                    }
+                })
+                .catch(error => console.error("Request failed:", error));
+            }
+        });
+
+        // Animation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate product container
+            gsap.to('.product-container', {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: 'power2.out'
+            });
+
+            // Animate product info
+            gsap.to('.product-info', {
+                opacity: 1,
+                x: 0,
+                duration: 0.8,
+                delay: 0.3,
+                ease: 'power2.out'
+            });
+
+            // Handle quantity buttons
+                   // Handle Add to Cart button
+        const addToCartForm = document.getElementById('addToCartForm');
+        const addToCartBtn = document.getElementById('addToCartBtn');
+        const notification = document.getElementById('addedNotification');
+        const quantityInput = document.querySelector('.quantity-input');
+
+        addToCartBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Animate the button
+            gsap.to(addToCartBtn, {
+                scale: 1.05,
+                duration: 0.2,
+                onComplete: function() {
+                    gsap.to(addToCartBtn, {
+                        scale: 1,
+                        duration: 0.2
+                    });
+                }
+            });
+
+            // Get product details
+            const productId = parseInt(document.getElementById('productIdInput').value);
+            const quantity = parseInt(quantityInput.value);
+
+            // Get the anti-forgery token
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            // Send AJAX request to add to cart
+            fetch('/Cart/AddToCart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify({
+                    productId: productId,
+                    quantity: quantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show notification
+                    notification.classList.add('show');
+
+                    // Update cart count if you have a cart counter in header
+                    const cartCounter = document.querySelector('.cart-count');
+                    if (cartCounter) {
+                        cartCounter.textContent = data.cartItemCount;
+                    }
+
+                    // Hide notification after 3 seconds
+                    setTimeout(function() {
+                        notification.classList.remove('show');
+                    }, 3000);
+
+                    // Add cart icon animation
+                    const cartIcon = document.querySelector('.cart-icon');
+                    cartIcon.classList.add('cart-icon-animation');
+
+                    // Remove animation class after animation completes
+                    setTimeout(function() {
+                        cartIcon.classList.remove('cart-icon-animation');
+                    }, 2000);
+                } else {
+                    // Show error notification
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while adding to cart');
+            });
+        });
+       
+
+
+                // Handle Add to Cart button
+        
+        });
+    </script>
+</body>
+</html>

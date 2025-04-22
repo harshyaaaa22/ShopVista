@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Registration Confirmation";
+    Layout = null;
+}
+<link rel="stylesheet" href="~/css/logreg.css" />
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Registration Successful</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fa fa-envelope text-primary" style="font-size: 64px;"></i>
+                    </div>
+                    <h4 class="mb-3">Confirm Your Email Address</h4>
+                    <p class="mb-2">Thank you for registering with ShopVista!</p>
+                    <p class="mb-4">
+                        We've sent a confirmation email to <strong>@ViewBag.Email</strong>.
+                        Please check your inbox and click on the confirmation link to activate your account.
+                    </p>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fa fa-info-circle me-2"></i>
+                        If you don't see the email in your inbox, please check your spam folder.
+                    </div>
+                    <div class="mt-4">
+                        <p>Didn't receive the email?</p>
+                        <a asp-action="ResendEmailConfirmation" asp-controller="Account" class="btn btn-outline-primary">
+                            Resend Confirmation Email
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <p class="mb-0">Already confirmed? <a asp-action="Login" asp-controller="Account">Log in</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/logreg.js"></script>

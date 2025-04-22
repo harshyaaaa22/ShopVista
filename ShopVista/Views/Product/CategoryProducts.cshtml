@@ -1,0 +1,754 @@
+﻿@model List<Product>
+@{
+    ViewData["Title"] = ViewBag.CategoryName + " Products";
+}
+
+<style>
+    /* Modern e-commerce styling with enhanced animations */
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .container {
+        margin-top: 30px;
+        padding-bottom: 50px;
+    }
+
+    .page-title {
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-bottom: 15px;
+        color: #333;
+        opacity: 0;
+        transform: translateY(-20px);
+        animation: fadeInDown 0.8s forwards;
+    }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #ff9a9e, #fad0c4);
+            animation: widthGrow 1s ease-in-out forwards;
+        }
+
+    @@keyframes widthGrow {
+        from
+
+    {
+        width: 0;
+    }
+
+    to {
+        width: 80px;
+    }
+
+    }
+
+    @@keyframes fadeInDown {
+        to
+
+    {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
+        margin-top: 30px;
+    }
+
+    .product-card {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        background: white;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+        .product-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            z-index: 5;
+        }
+
+        /* Animation for cards to appear sequentially */
+        .product-card:nth-child(1) {
+            animation: fadeInUp 0.6s 0.1s forwards;
+        }
+
+        .product-card:nth-child(2) {
+            animation: fadeInUp 0.6s 0.2s forwards;
+        }
+
+        .product-card:nth-child(3) {
+            animation: fadeInUp 0.6s 0.3s forwards;
+        }
+
+        .product-card:nth-child(4) {
+            animation: fadeInUp 0.6s 0.4s forwards;
+        }
+
+        .product-card:nth-child(5) {
+            animation: fadeInUp 0.6s 0.5s forwards;
+        }
+
+        .product-card:nth-child(6) {
+            animation: fadeInUp 0.6s 0.6s forwards;
+        }
+
+        .product-card:nth-child(n+7) {
+            animation: fadeInUp 0.6s 0.7s forwards;
+        }
+
+    @@keyframes fadeInUp {
+        to
+
+    {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .product-image {
+        height: 220px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s ease;
+        }
+
+    .product-card:hover .product-image img {
+        transform: scale(1.1);
+    }
+
+    .discount-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #ff5252;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        z-index: 2;
+        transform: scale(0);
+        animation: popIn 0.3s 1s forwards;
+    }
+
+    @@keyframes popIn {
+        50%
+
+    {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+    }
+
+    .product-quick-actions {
+        position: absolute;
+        bottom: -50px;
+        left: 0;
+        right: 0;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        justify-content: center;
+        padding: 10px 0;
+        transition: bottom 0.3s ease;
+    }
+
+    .product-card:hover .product-quick-actions {
+        bottom: 0;
+    }
+
+    .quick-action-btn {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 1.2rem;
+        margin: 0 10px;
+        cursor: pointer;
+        transition: transform 0.2s, color 0.2s;
+    }
+
+        .quick-action-btn:hover {
+            transform: scale(1.2);
+            color: #fad0c4;
+        }
+
+    .product-body {
+        padding: 20px;
+        position: relative;
+    }
+
+    .product-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+        color: #333;
+        transition: color 0.3s;
+    }
+
+    .product-card:hover .product-title {
+        color: #ff9a9e;
+    }
+
+    .product-description {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .product-price {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .current-price {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #333;
+    }
+
+    .old-price {
+        font-size: 0.9rem;
+        color: #999;
+        text-decoration: line-through;
+        margin-left: 10px;
+    }
+
+    .product-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .view-btn {
+        padding: 8px 15px;
+        background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .view-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(135deg, #fad0c4, #ff9a9e);
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+
+        .view-btn:hover::before {
+            width: 100%;
+        }
+
+        .view-btn:hover {
+            box-shadow: 0 5px 15px rgba(255, 154, 158, 0.4);
+            transform: translateY(-3px);
+        }
+
+    .stock-status {
+        font-size: 0.8rem;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-weight: 500;
+    }
+
+    .in-stock {
+        background: #e8f5e9;
+        color: #388e3c;
+    }
+
+    .low-stock {
+        background: #fff8e1;
+        color: #ffa000;
+    }
+
+    .out-stock {
+        background: #ffebee;
+        color: #d32f2f;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        margin-top: 30px;
+        animation: fadeIn 1s ease forwards;
+    }
+
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: #ccc;
+        margin-bottom: 15px;
+    }
+
+    .empty-state h3 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .back-btn {
+        display: inline-block;
+        padding: 10px 25px;
+        background: #6c757d;
+        color: white;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+        .back-btn:hover {
+            background: #5a6268;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+    /* Category pills */
+    .category-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 20px;
+        opacity: 0;
+        animation: fadeIn 0.8s 0.5s forwards;
+    }
+
+    .category-pill {
+        padding: 8px 15px;
+        background: white;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #666;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+
+        .category-pill:hover, .category-pill.active {
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 154, 158, 0.4);
+        }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .product-grid
+
+    {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+
+    }
+
+    @@media (max-width: 576px) {
+        .product-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    }
+
+    /* Loading skeleton animation */
+    @@keyframes shimmer {
+        0%
+
+    {
+        background-position: -1000px 0;
+    }
+
+    100% {
+        background-position: 1000px 0;
+    }
+
+    }
+
+    .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 1000px 100%;
+        animation: shimmer 2s infinite linear;
+    }
+</style>
+
+<!-- Preload necessary resources -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+<div class="container">
+    <h2 class="text-center page-title">@ViewBag.CategoryName Products</h2>
+
+    <!-- Category filter pills -->
+    <div class="category-filters">
+        <div class="category-pill active">All</div>
+        <div class="category-pill">New Arrivals</div>
+        <div class="category-pill">Best Sellers</div>
+        <div class="category-pill">On Sale</div>
+        <div class="category-pill">Featured</div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="product-grid">
+            @foreach (var product in Model)
+            {
+                <div class="product-card">
+                    <div class="product-image">
+                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl" alt="@product.Name" loading="lazy">
+                        }
+                        else
+                        {
+                            <img src="/images/product-placeholder.jpg" alt="@product.Name" loading="lazy">
+                        }
+
+                        @if (product.OldPrice.HasValue)
+                        {
+                            var discountPercentage = Math.Round((1 - (product.Price / product.OldPrice.Value)) * 100);
+                            <div class="discount-badge">-@discountPercentage%</div>
+                        }
+
+                        <div class="product-quick-actions">
+                            <button class="quick-action-btn" data-product-id="@product.Id" title="Add to favorites">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="quick-action-btn" title="Quick view">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="quick-action-btn" title="Add to cart">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="product-body">
+                        <h5 class="product-title">@product.Name</h5>
+                        <p class="product-description">@product.Description</p>
+
+                        <div class="product-price">
+                            <span class="current-price">@product.Price.ToString("C")</span>
+                            @if (product.OldPrice.HasValue)
+                            {
+                                <span class="old-price">@product.OldPrice.Value.ToString("C")</span>
+                            }
+                        </div>
+
+                        <div class="product-footer">
+                            <a asp-action="Details" asp-route-id="@product.Id" class="view-btn">
+                                View Details
+                            </a>
+
+                            <!-- Dynamic stock status - you can replace with actual stock data -->
+                            @{
+                                var random = new Random();
+                                var stock = random.Next(0, 15);
+                                string stockClass = stock > 5 ? "in-stock" : (stock > 0 ? "low-stock" : "out-stock");
+                                string stockText = stock > 5 ? "In Stock" : (stock > 0 ? "Low Stock" : "Out of Stock");
+                            }
+                            <span class="stock-status @stockClass">@stockText</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <i class="fas fa-box-open"></i>
+            <h3>No products found</h3>
+            <p>We couldn't find any products in this category.</p>
+            <a asp-action="Search" class="back-btn">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Search
+            </a>
+        </div>
+    }
+
+    <div class="text-center mt-5">
+        <a asp-action="Search" class="back-btn">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Search
+        </a>
+    </div>
+</div>
+
+<script>
+    // Animation for product cards when they enter viewport
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize category pills filter
+        const categoryPills = document.querySelectorAll('.category-pill');
+        categoryPills.forEach(pill => {
+            pill.addEventListener('click', function() {
+                // Remove active class from all pills
+                categoryPills.forEach(p => p.classList.remove('active'));
+                // Add active class to clicked pill
+                this.classList.add('active');
+
+                // Here you would normally filter products based on category
+                // Since this is just frontend functionality, we'll add a simulated loading effect
+                const productGrid = document.querySelector('.product-grid');
+                if (productGrid) {
+                    productGrid.style.opacity = '0.5';
+                    setTimeout(() => {
+                        productGrid.style.opacity = '1';
+                    }, 500);
+                }
+            });
+        });
+
+        // Quick action buttons functionality
+        const quickActionBtns = document.querySelectorAll('.quick-action-btn');
+        quickActionBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const action = this.getAttribute('title');
+
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.style.position = 'fixed';
+                notification.style.bottom = '20px';
+                notification.style.right = '20px';
+                notification.style.background = 'rgba(0,0,0,0.8)';
+                notification.style.color = 'white';
+                notification.style.padding = '10px 20px';
+                notification.style.borderRadius = '5px';
+                notification.style.zIndex = '1000';
+                notification.style.transform = 'translateY(100px)';
+                notification.style.opacity = '0';
+                notification.style.transition = 'all 0.3s ease';
+
+                if (action === 'Add to favorites') {
+                    notification.innerHTML = '<i class="fas fa-heart mr-2"></i> Added to favorites';
+                } else if (action === 'Quick view') {
+                    notification.innerHTML = '<i class="fas fa-eye mr-2"></i> Quick view is not available yet';
+                } else if (action === 'Add to cart') {
+                    notification.innerHTML = '<i class="fas fa-shopping-cart mr-2"></i> Added to cart';
+                }
+
+                document.body.appendChild(notification);
+
+                // Show notification
+                setTimeout(() => {
+                    notification.style.transform = 'translateY(0)';
+                    notification.style.opacity = '1';
+                }, 10);
+
+                // Hide and remove notification
+                setTimeout(() => {
+                    notification.style.transform = 'translateY(100px)';
+                    notification.style.opacity = '0';
+
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 300);
+                }, 2000);
+            });
+        });
+
+        // Lazy load images with intersection observer
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        const src = img.getAttribute('data-src');
+                        if (src) {
+                            img.src = src;
+                            img.removeAttribute('data-src');
+                        }
+                        observer.unobserve(img);
+                    }
+                });
+            });
+
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                imageObserver.observe(img);
+            });
+        } else {
+            // Fallback for browsers that don't support IntersectionObserver
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                img.src = img.getAttribute('data-src');
+                img.removeAttribute('data-src');
+            });
+        }
+    });
+
+
+
+        // wishlist.js
+    $(document).ready(function () {
+        // Initialize all wishlist buttons on page load
+        initializeWishlistButtons();
+
+        function initializeWishlistButtons() {
+            // Check if each product is in the wishlist
+            $('.quick-action-btn').each(function () {
+                const $btn = $(this);
+                const productId = $btn.data('product-id');
+
+                // Skip if product-id is not set
+                if (!productId) return;
+
+                $.ajax({
+                    url: '/Wishlist/IsInWishlist',
+                    type: 'GET',
+                    data: { productId: productId },
+                    success: function (response) {
+                        if (response.isInWishlist) {
+                            $btn.addClass('active');
+                            $btn.find('i').removeClass('far').addClass('fas');
+                        } else {
+                            $btn.removeClass('active');
+                            $btn.find('i').removeClass('fas').addClass('far');
+                        }
+                    }
+                });
+            });
+
+            // Set up click handlers for wishlist buttons
+            $('.quick-action-btn').on('click', function (e) {
+                e.preventDefault();
+
+                const $btn = $(this);
+                const productId = $btn.data('product-id');
+
+                // Check if user is authenticated (this is managed server-side)
+                if ($btn.hasClass('active')) {
+                    // Remove from wishlist
+                    removeFromWishlist(productId, $btn);
+                } else {
+                    // Add to wishlist
+                    addToWishlist(productId, $btn);
+                }
+            });
+        }
+
+        function addToWishlist(productId, $btn) {
+            $.ajax({
+                url: '/Wishlist/AddToWishlist',
+                type: 'POST',
+                data: { productId: productId },
+                success: function (response) {
+                    if (response.success) {
+                        $btn.addClass('active');
+                        $btn.find('i').removeClass('far').addClass('fas');
+
+                        // Show success message
+                        showNotification('success', response.message);
+                    } else {
+                        // Show error message
+                        showNotification('error', response.message);
+
+                        // If not logged in, redirect to login
+                        if (response.message.includes('logged in')) {
+                            setTimeout(function() {
+                                window.location.href = '/Account/Login?returnUrl=' + encodeURIComponent(window.location.pathname);
+                            }, 2000);
+                        }
+                    }
+                },
+                error: function () {
+                    showNotification('error', 'An error occurred. Please try again.');
+                }
+            });
+        }
+
+        function removeFromWishlist(productId, $btn) {
+            $.ajax({
+                url: '/Wishlist/RemoveFromWishlist',
+                type: 'POST',
+                data: { productId: productId },
+                success: function (response) {
+                    if (response.success) {
+                        $btn.removeClass('active');
+                        $btn.find('i').removeClass('fas').addClass('far');
+
+                        // Show success message
+                        showNotification('success', response.message);
+                    } else {
+                        // Show error message
+                        showNotification('error', response.message);
+                    }
+                },
+                error: function () {
+                    showNotification('error', 'An error occurred. Please try again.');
+                }
+            });
+        }
+
+        function showNotification(type, message) {
+            // You can implement this using your preferred notification library
+            // Example: toastr, sweetalert2, or a custom implementation
+            if (type === 'success') {
+                // Show success notification
+                console.log('Success:', message);
+            } else {
+                // Show error notification
+                console.log('Error:', message);
+            }
+        }
+    });
+</script>

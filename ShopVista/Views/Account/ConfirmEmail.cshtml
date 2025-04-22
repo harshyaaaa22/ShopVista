@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Confirm Email";
+    Layout = null;
+}
+<link rel="stylesheet" href="~/css/logreg.css" />
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Email Confirmed</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fa fa-check-circle text-success" style="font-size: 64px;"></i>
+                    </div>
+                    <h4 class="mb-3">Thank you for confirming your email</h4>
+                    <p class="mb-4">Your email has been successfully verified. You can now log in to your account.</p>
+                    <div class="d-grid">
+                        <a asp-action="Login" asp-controller="Account" class="btn btn-primary">Go to Login</a>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <p class="mb-0">Have questions? <a href="#">Contact our support team</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/logreg.js"></script>

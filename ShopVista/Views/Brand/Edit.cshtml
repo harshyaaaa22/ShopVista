@@ -1,0 +1,24 @@
+﻿@model Brand
+
+@{
+    ViewData["Title"] = "Edit Brand";
+}
+
+<h1>Edit Brand</h1>
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="LogoUrl" class="control-label"></label>
+        <input asp-for="LogoUrl" class="form-control" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-primary" />
+    </div>
+</form>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
